@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Class XII Examination Result - R.P.S. PUBLIC SCHOOL</title>
+
+<style>
+body{
+font-family: 'Times New Roman', serif;
+background:#e6e6e6;
+margin:0;
+padding:0;
+}
+
+.container{
+width:80%;
+margin:30px auto;
+background:white;
+padding:30px;
+border:3px solid black;
+position:relative;
+}
+
+.header{
+text-align:center;
+border-bottom:2px solid black;
+padding-bottom:10px;
+}
+
+h2,h3{
+margin:5px;
+}
+
+.info{
+margin-top:15px;
+line-height:1.8;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid black;
+padding:8px;
+text-align:center;
+}
+
+.subject{
+text-align:left;
+}
+
+.footer{
+margin-top:30px;
+display:flex;
+justify-content:space-between;
+}
+
+button{
+padding:8px 15px;
+margin-top:15px;
+cursor:pointer;
+}
+
+.watermark{
+position:absolute;
+opacity:0.06;
+font-size:70px;
+transform:rotate(-30deg);
+top:45%;
+left:15%;
+color:black;
+}
+
+@media print{
+button{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="watermark">PROVISIONAL RESULT</div>
+
+<div class="header">
+<h2>R.P.S. PUBLIC SCHOOL</h2>
+<h3>Senior School Certificate Examination (Class XII)</h3>
+<h3>Commerce Stream</h3>
+</div>
+
+<br>
+
+<center>
+<input type="text" id="roll" placeholder="Roll Number">
+<input type="text" id="id" placeholder="School ID">
+<input type="text" id="school" placeholder="School Code">
+<button onclick="getResult()">Submit</button>
+</center>
+
+<div id="result"></div>
+
+</div>
+
+<script>
+
+function grade(mark){
+if(mark>=91) return "A1";
+if(mark>=81) return "A2";
+if(mark>=71) return "B1";
+if(mark>=61) return "B2";
+if(mark>=51) return "C1";
+if(mark>=41) return "C2";
+if(mark>=33) return "D";
+return "E";
+}
+
+function getResult(){
+
+var roll=document.getElementById("roll").value;
+var id=document.getElementById("id").value;
+var school=document.getElementById("school").value;
+
+var url="https://script.google.com/macros/s/AKfycbysbTlikykxENT3WNITd_PNRAwCMuIMxpGUmxdoTfSzX_8ompUhZqen5e1IeHKUOXk/exec?roll="+roll+"&id="+id+"&school="+school;
+
+fetch(url)
+.then(response=>response.json())
+.then(data=>{
+
+if(data.error){
+document.getElementById("result").innerHTML="<h3>No Record Found</h3>";
+return;
+}
+
+var acc=parseInt(data.acc);
+var bst=parseInt(data.bst);
+var eco=parseInt(data.eco);
+var eng=parseInt(data.eng);
+var opt=parseInt(data.opt);
+
+var total=acc+bst+eco+eng+opt;
+var percentage=(total/500*100).toFixed(2);
+
+document.getElementById("result").innerHTML=`
+
+<div class="info">
+<p><b>Roll Number:</b> ${roll}</p>
+<p><b>Name:</b> ${data.name}</p>
+<p><b>Father's Name:</b> ${data.father}</p>
+<p><b>Mother's Name:</b> ${data.mother}</p>
+<p><b>School Code:</b> ${school}</p>
+</div>
+
+<table>
+<tr>
+<th>Sub Code</th>
+<th class="subject">Subject Name</th>
+<th>Marks Obtained</th>
+<th>Grade</th>
+</tr>
+
+<tr><td>055</td><td class="subject">Accountancy</td><td>${acc}</td><td>${grade(acc)}</td></tr>
+<tr><td>054</td><td class="subject">Business Studies</td><td>${bst}</td><td>${grade(bst)}</td></tr>
+<tr><td>030</td><td class="subject">Economics</td><td>${eco}</td><td>${grade(eco)}</td></tr>
+<tr><td>301</td><td class="subject">English Core</td><td>${eng}</td><td>${grade(eng)}</td></tr>
+<tr><td>048</td><td class="subject">Optional Subject</td><td>${opt}</td><td>${grade(opt)}</td></tr>
+
+<tr>
+<td colspan="2"><b>Total</b></td>
+<td><b>${total}</b></td>
+<td>-</td>
+</tr>
+
+</table>
+
+<h3>Percentage: ${percentage}%</h3>
+<h3>Result: ${data.result}</h3>
+
+<div class="footer">
+<div>Date of Declaration: March 2026</div>
+<div>Principal Signature</div>
+</div>
+
+<button onclick="window.print()">Print Result</button>
+
+`;
+});
+}
+
+</script>
+
+</body>
+</html>
